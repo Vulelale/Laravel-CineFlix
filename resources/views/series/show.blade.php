@@ -1,118 +1,138 @@
 <x-app>
+    <div class="max-w-7xl mx-auto px-4 py-8 text-white">
+        
+        {{-- Flash poruke --}}
+        @if(session('success'))
+            <div class="bg-green-600/20 border border-green-600 text-green-400 px-4 py-3 rounded-lg mb-6 flex items-center">
+                <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
+            </div>
+        @endif
 
-    @if(session('success'))
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mx-auto max-w-7xl mb-4">
-        {{ session('success') }}
-    </div>
-    @endif
-    
-    @if($errors->any())
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mx-auto max-w-7xl mb-4">
-        @foreach($errors->all() as $error)
-        <p>{{ $error }}</p>
-        @endforeach
-    </div>
-    @endif
-    <div class="max-w-7xl mx-auto px-4 py-8">
-       
-        <div class="bg-gray-800 rounded-lg shadow-2xl p-8 mb-8">
+        @if($errors->any())
+            <div class="bg-red-600/20 border border-red-600 text-red-400 px-4 py-3 rounded-lg mb-6 flex items-center">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                <div>
+                    @foreach($errors->all() as $error)
+                        <p>{{ $error }}</p>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        {{-- Kartica serije --}}
+        <div class="bg-gray-900/80 backdrop-blur-md rounded-2xl shadow-xl p-8 mb-10">
             <div class="flex flex-col md:flex-row gap-8">
-               
+
+                {{-- Slika --}}
                 <div class="md:w-1/3">
                     <img 
                         src="{{ asset('storage/' . $series->image_path) }}" 
                         alt="{{ $series->title }}" 
-                        class="w-full h-auto rounded-lg shadow-lg"
+                        class="w-full h-auto rounded-xl shadow-lg"
                     >
                 </div>
-                
-                
-                <div class="md:w-2/3 text-white">
-                    <h1 class="text-4xl font-bold mb-4">{{ $series->title }}</h1>
-                    <div class="space-y-4">
-                        <p><span class="font-semibold">Datum izlaska:</span> {{ $series->release_date }}</p>
-                        <p><span class="font-semibold">Žanr:</span> {{ $series->genre }}</p>
-                        <p><span class="font-semibold">Cena celokupne serije:</span> {{ $series->price }} RSD</p>
-                        <p><span class="font-semibold">Opis:</span> {{ $series->description }}</p>
-                        <p><span class="font-semibold">Zahteva pretplatu:</span> 
-                            {{ $series->is_subscription_required ? 'Da' : 'Ne' }}
-                        </p>
-                    </div>
+
+                {{-- Detalji --}}
+                <div class="md:w-2/3 space-y-4">
+                    <h1 class="text-4xl font-extrabold text-blue-400">{{ $series->title }}</h1>
+
+                    <p><i class="fas fa-calendar-alt text-blue-400 mr-2"></i><span class="font-semibold">Datum izlaska:</span> {{ $series->release_date }}</p>
+                    <p><i class="fas fa-film text-blue-400 mr-2"></i><span class="font-semibold">Žanr:</span> {{ $series->genre }}</p>
+                    <p><i class="fas fa-coins text-yellow-400 mr-2"></i><span class="font-semibold">Cena:</span> {{ $series->price }} RSD</p>
+                    <p><i class="fas fa-align-left text-blue-400 mr-2"></i><span class="font-semibold">Opis:</span> {{ $series->description }}</p>
+                    <p><i class="fas fa-ticket-alt text-blue-400 mr-2"></i><span class="font-semibold">Zahteva pretplatu:</span> {{ $series->is_subscription_required ? 'Da' : 'Ne' }}</p>
+
+                    {{-- Ocena --}}
+                    <p>
+                        <i class="fas fa-star text-yellow-400 mr-2"></i>
+                        <span class="font-semibold">Prosečna ocena:</span> 
+                        {{ number_format($series->averageRating(), 1) }}/5 
+                        ({{ $series->ratingsCount() }} korisnika)
+                    </p>
+
+                    {{-- Forma za ocenjivanje --}}
+                    @if(Auth::check())
+                        <form action="{{ route('series.rate', $series->SeriesID) }}" method="POST" class="mt-4 flex items-center gap-3">
+                            @csrf
+                            <label for="rating" class="text-gray-300 font-medium"><i class="fas fa-pen mr-2"></i>Ocenite:</label>
+                            <select name="rating" id="rating" class="text-white px-2 py-1 rounded">
+                                @for($i=1; $i<=5; $i++)
+                                    <option value="{{ $i }}">{{ $i }} ★</option>
+                                @endfor
+                            </select>
+                            <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 px-4 py-2 rounded-lg text-black font-semibold transition flex items-center hover:cursor-pointer">
+                                <i class="fas fa-star mr-2"></i> Oceni
+                            </button>
+                        </form>
+                    @endif
                 </div>
             </div>
         </div>
 
-       
-        <div class="bg-gray-800 rounded-lg shadow-2xl p-8" x-data="{ activeSeason: 0 }">
+        {{-- Sezone --}}
+        <div class="bg-gray-900/80 backdrop-blur-md rounded-2xl shadow-xl p-8" x-data="{ activeSeason: 0 }">
             
-            <div class="mb-6 border-b border-gray-600">
-                <div class="flex flex-wrap -mb-px">
+            {{-- Tabovi --}}
+            <div class="mb-6 border-b border-gray-700">
+                <div class="flex flex-wrap">
                     @foreach($series->seasons as $index => $season)
-                    <button 
-                        @click="activeSeason = {{ $index }}"
-                        :class="activeSeason === {{ $index }} 
-                            ? 'border-blue-500 text-blue-500' 
-                            : 'border-transparent text-gray-400 hover:text-gray-300'"
-                        class="inline-block px-6 py-3 border-b-2 font-medium text-lg focus:outline-none transition"
-                    >
-                        Sezona {{ $season->season_number }}
-                    </button>
+                        <button 
+                            @click="activeSeason = {{ $index }}"
+                            :class="activeSeason === {{ $index }} 
+                                ? 'border-b-2 border-blue-500 text-blue-400' 
+                                : 'text-gray-400 hover:text-gray-200'"
+                            class="px-6 py-2 text-lg font-medium transition">
+                            <i class="fas fa-layer-group mr-2"></i> Sezona {{ $season->season_number }}
+                        </button>
                     @endforeach
                 </div>
             </div>
 
-            
+            {{-- Epizode --}}
             @foreach($series->seasons as $index => $season)
-            <div x-show="activeSeason === {{ $index }}" class="space-y-6">
-                <div class="bg-gray-800 rounded-lg p-6">
-                    <h3 class="text-2xl text-white font-bold mb-6">
+                <div x-show="activeSeason === {{ $index }}" class="space-y-6">
+                    <h3 class="text-2xl font-bold text-blue-400">
                         {{ $season->title ?: 'Sezona ' . $season->season_number }}
                         <span class="text-gray-400">({{ $season->release_year }})</span>
                     </h3>
                     
-                    
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         @foreach($season->episodes as $episode)
-                        <div class="bg-gray-800 rounded-lg p-4 hover:bg-gray-500 transition">
-                            @if($episode->image_path)
-                            <img 
-                                src="{{ asset('storage/' . $episode->image_path) }}" 
-                                alt="{{ $episode->title }}" 
-                                class="w-full h-48 object-cover rounded-lg mb-4"
-                            >
-                            @endif
-                            <div class="space-y-2">
-                                <p class="font-semibold text-white text-lg">
-                                    Epizoda {{ $episode->episode_number }}: {{ $episode->title }}
+                            <div class="bg-gray-800/70 rounded-xl p-4 shadow hover:bg-gray-700/80 transition">
+                                @if($episode->image_path)
+                                    <img 
+                                        src="{{ asset('storage/' . $episode->image_path) }}" 
+                                        alt="{{ $episode->title }}" 
+                                        class="w-full h-48 object-cover rounded-lg mb-4"
+                                    >
+                                @endif
+                                <p class="font-semibold text-lg text-white">
+                                    <i class="fas fa-play-circle text-blue-400 mr-2"></i> Epizoda {{ $episode->episode_number }}: {{ $episode->title }}
                                 </p>
-                                <div class="text-sm text-gray-300">
-                                    <p><i class="far fa-clock mr-2"></i>{{ $episode->duration }} min</p>
-                                    <p><i class="far fa-calendar-alt mr-2"></i>{{ $episode->air_date }}</p>
+                                <div class="text-sm text-gray-400 mt-1">
+                                    <p><i class="far fa-clock mr-1"></i>{{ $episode->duration }} min</p>
+                                    <p><i class="far fa-calendar-alt mr-1"></i>{{ $episode->air_date }}</p>
                                 </div>
                             </div>
-                        </div>
                         @endforeach
                     </div>
                 </div>
-            </div>
             @endforeach
 
-            
-            <div class="mt-8 flex gap-4">
+            {{-- Dugmad dole --}}
+            <div class="mt-10 flex gap-4">
                 <a href="{{ route('tvshows.index') }}" 
-                    class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition">
-                    Nazad na listu serija
+                   class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow transition flex items-center">
+                   <i class="fas fa-arrow-left mr-2"></i> Nazad na listu serija
                 </a>
-                
-                
+
                 <form action="{{ route('purchase.series', $series->SeriesID) }}" method="POST">
                     @csrf
                     <button type="submit" 
-                            class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition hover:cursor-pointer">
-                        Kupi celu seriju za {{ $series->price }} RSD
+                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg shadow transition flex items-center hover:cursor-pointer">
+                        <i class="fas fa-shopping-cart mr-2"></i> Kupi celu seriju za {{ $series->price }} RSD
                     </button>
                 </form>
-                
             </div>
         </div>
     </div>

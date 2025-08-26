@@ -9,6 +9,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\SeriesController;
+use App\Http\Controllers\RatingController;
 
 /* Route::get('/', function () {
     return view('/home');
@@ -94,5 +95,11 @@ Route::get('/series/{series}', [SeriesController::class, 'show'])->name('series.
 
 Route::post('/purchase/series/{series}', [PurchaseController::class, 'purchaseSeries'])
     ->name('purchase.series');
+
+    Route::post('/movies/{film}/rate', [RatingController::class, 'storeFilm'])->name('movies.rate');
+Route::post('/series/{series}/rate', [RatingController::class, 'storeSeries'])->name('series.rate');
+
+
+
     
 
