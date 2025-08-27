@@ -2,11 +2,21 @@
 
     @section('title', 'CineFlix-Register')
     
-    @if($errors->any())
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mx-auto max-w-7xl mb-4">
-        @foreach($errors->all() as $error)
-        <p>{{ $error }}</p>
-        @endforeach
+     @if($errors->any())
+    <div class="bg-red-600/20 border border-red-600 text-red-400 px-4 py-3 rounded relative mx-auto max-w-7xl mb-4">
+        <i class="fas fa-exclamation-triangle mt-1"></i>
+        <div>
+            @foreach($errors->all() as $error)
+            <p>{{ $error }}</p>
+            @endforeach
+        </div>
+    </div>
+    @endif
+    
+    
+    @if(session('error'))
+    <div class="bg-red-600/20 border border-red-600 text-red-400 px-4 py-3 rounded relative mx-auto max-w-7xl mb-4">
+        <i class="fas fa-times-circle mr-2"></i> {{ session('error') }}
     </div>
     @endif
 

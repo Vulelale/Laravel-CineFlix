@@ -1,20 +1,26 @@
 <x-app>
     @section('title', 'CineFlix-Log In')
     
+    
     @if($errors->any())
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mx-auto max-w-7xl mb-4">
-        @foreach($errors->all() as $error)
-        <p>{{ $error }}</p>
-        @endforeach
+    <div class="bg-red-600/20 border border-red-600 text-red-400 px-4 py-3 rounded relative mx-auto max-w-7xl mb-4">
+        <i class="fas fa-exclamation-triangle mt-1"></i>
+        <div>
+            @foreach($errors->all() as $error)
+            <p>{{ $error }}</p>
+            @endforeach
+        </div>
     </div>
     @endif
-
+    
+    
     @if(session('error'))
-    <div class="alert alert-danger bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mx-auto max-w-7xl mb-4">
-        {{ session('error') }}
+    <div class="bg-red-600/20 border border-red-600 text-red-400 px-4 py-3 rounded relative mx-auto max-w-7xl mb-4">
+        <i class="fas fa-times-circle mr-2"></i> {{ session('error') }}
     </div>
-@endif
-
+    @endif
+    
+    
     <div
     style="animation: slideInFromLeft 1s ease-out;"
     class="mx-auto max-w-md w-full bg-gradient-to-r from-blue-800 to-lightblue-600 rounded-xl shadow-2xl overflow-hidden p-8 space-y-8"
@@ -26,7 +32,7 @@
     Dobrodošli
 </h2>
 <p style="animation: appear 3s ease-out;" class="text-center text-gray-200">
-   Uloguj se na svoj nalog
+    Uloguj se na svoj nalog
 </p>
 <form method="POST" action="/login" class="space-y-6">
     @csrf
@@ -67,13 +73,13 @@
     class="w-full py-2 px-4 bg-blue-500 hover:bg-purple-700 rounded-md shadow-lg text-white font-semibold transition duration-200 hover:cursor-pointer"
     type="submit"
     >
-   Uloguj se
+    Uloguj se
 </button>
 </form>
 <div class="text-center text-gray-300">
     Nemaš nalog?
     <a class="text-purple-300 hover:underline" href="/register">Registruj se</a>
-  </div>
+</div>
 </div>
 
 <style>

@@ -1,213 +1,216 @@
 <x-app>
-    
-    @if(session('success'))
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mx-auto max-w-7xl mb-4">
-        {{ session('success') }}
-    </div>
-    @endif
-    
-    @if($errors->any())
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mx-auto max-w-7xl mb-4">
-        @foreach($errors->all() as $error)
-        <p>{{ $error }}</p>
-        @endforeach
-    </div>
-    @endif
-    
-    <div class="min-h-screen bg-gradient-to-r from-darkblue-500 to-lightblue-600 p-8" x-data="{
-        activeTab: localStorage.getItem('activeTab') || 'films',
-        setTab(tab) {
-            this.activeTab = tab;
-            localStorage.setItem('activeTab', tab);
-        }
-    }"
-    >
-    <div class="max-w-7xl mx-auto space-y-8">
-        
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
-                Admin Dashboard
-            </h1>
-            
-            <div class="flex gap-4">
-                {{-- Tabovi --}}
-                <div class="flex rounded-lg bg-gray-800 p-1">
-                    <button 
-                    @click="setTab('films')"
-                    :class="activeTab === 'films' ? 'bg-gray-700 text-white' : 'text-gray-400'"
-                    class="px-4 py-2 rounded-md focus:outline-none transition-colors"
-                    >
-                    Filmovi
-                </button>
-                <button 
-                @click="setTab('users')"
-                :class="activeTab === 'users' ? 'bg-gray-700 text-white' : 'text-gray-400'"
-                class="px-4 py-2 rounded-md focus:outline-none transition-colors"
-                >
-                Korisnici
-            </button>
-            <button 
-            @click="setTab('series')"
-            :class="activeTab === 'series' ? 'bg-gray-700 text-white' : 'text-gray-400'"
-            class="px-4 py-2 rounded-md focus:outline-none transition-colors"
-            >
-            Serije
-        </button>
-    </div>
-    
-    <a href="{{ route('films.create') }}" 
-    class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:opacity-80 transition-colors">
-    + Novi Film
-</a>
-<a href="{{ route('series.create') }}" 
-   class="bg-white text-blue-600 px-4 py-2 rounded-lg hover:opacity-80 transition-colors">
-    + Nova Serija
-</a>
-</div>
-</div>
+    <div class="min-h-screen bg-gradient-to-r from-darkblue-500 to-lightblue-600  p-10"
+         x-data="{
+            activeTab: localStorage.getItem('adminTab') || 'films',
+            setTab(tab) {
+                this.activeTab = tab;
+                localStorage.setItem('adminTab', tab);
+            }
+         }">
 
-{{-- Serije --}}
-<div x-show="activeTab === 'series'" class="bg-gray-800 rounded-lg shadow-xl p-6">
-    <h2 class="text-xl font-semibold mb-4 text-gray-200">Sve serije</h2>
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-700">
-            <thead class="bg-gray-700">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Naslov</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Cena</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Pretplata</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Akcije</th>
-                    
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($series as $ser)
-                <tr class="hover:bg-gray-750 transition-colors">
-                    <td class="px-6 py-4 text-gray-200">{{ $ser->title }}</td>
-                    <td class="px-6 py-4 text-gray-400">{{ $ser->price }} RSD</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                        {{ $ser->is_subscription_required ? 'bg-green-900 text-green-200' : 'bg-red-900 text-red-200' }}">
-                        {{ $ser->is_subscription_required ? 'Da' : 'Ne' }}
-                    </span>
-                </td>
-                    <td class="px-6 py-4 space-x-2">
-                        <a href="{{ route('series.edit', $ser->SeriesID) }}" 
-                           class="text-blue-400 hover:text-blue-300">Izmeni</a>
-                        <form action="{{ route('series.destroy', $ser->SeriesID) }}" method="POST" class="inline">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="text-red-400 hover:text-red-300 hover:cursor-pointer"
-                                onclick="return confirm('Обрисати серију?')">Obriši</button>
-                        </form>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</div>
+        <div class="max-w-6xl mx-auto space-y-8">
 
-{{--  Filmovi --}}
-<div x-show="activeTab === 'films'" class="bg-gray-800 rounded-lg shadow-xl p-6">
-    <h2 class="text-xl font-semibold mb-4 text-gray-200">Svi filmovi</h2>
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-700">
-            <thead class="bg-gray-700">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Naslov</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Cena</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Pretplata</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Akcije</th>
-                </tr>
-            </thead>
-            <tbody class="bg-gray-800 divide-y divide-gray-700">
-                @foreach($films as $film)
-                <tr class="hover:bg-gray-750 transition-colors">
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-200">{{ $film->Title }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-400">{{ $film->Price }} RSD</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                        {{ $film->IsSubscriptionRequired ? 'bg-green-900 text-green-200' : 'bg-red-900 text-red-200' }}">
-                        {{ $film->IsSubscriptionRequired ? 'Da' : 'Ne' }}
-                    </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap space-x-2">
-                    <a href="{{ route('films.edit', $film->FilmID) }}" 
-                        class="text-blue-400 hover:text-blue-300">Izmeni</a>
-                        <form action="{{ route('films.destroy', $film->FilmID) }}" method="POST" class="inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" 
-                            class="text-red-400 hover:text-red-300 hover:cursor-pointer"
-                            onclick="return confirm('Da li ste sigurni?')">
-                            Obriši
+            {{-- Naslov + Tabovi + Akcije --}}
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                    Admin Dashboard
+                </h1>
+
+                <div class="flex flex-wrap gap-3 items-center">
+
+                    {{-- Tabovi --}}
+                    <div class="flex rounded-lg bg-gray-800 p-1 shadow-inner">
+                        <button 
+                            @click="setTab('films')"
+                            :class="activeTab === 'films' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-gray-200'"
+                            class="px-4 py-2 rounded-md font-medium transition hover:cursor-pointer">
+                            <i class="fas fa-film mr-2"></i> Filmovi
                         </button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-</div>
-<div class="mt-4">
-    {{ $films->links('pagination.page') }}
-</div>
-</div>
+                        <button 
+                            @click="setTab('series')"
+                            :class="activeTab === 'series' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-gray-200'"
+                            class="px-4 py-2 rounded-md font-medium transition hover:cursor-pointer">
+                            <i class="fas fa-tv mr-2"></i> Serije
+                        </button>
+                        <button 
+                            @click="setTab('users')"
+                            :class="activeTab === 'users' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-gray-200'"
+                            class="px-4 py-2 rounded-md font-medium transition hover:cursor-pointer">
+                            <i class="fas fa-users mr-2"></i> Korisnici
+                        </button>
+                    </div>
 
-{{-- korisnici --}}
-<div x-show="activeTab === 'users'" class="bg-gray-800 rounded-lg shadow-xl p-6">
-    <h2 class="text-xl font-semibold mb-4 text-gray-200">Svi korisnici</h2>
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-700">
-            <thead class="bg-gray-700">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">ID</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Ime i prezime</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Email</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Kupovine</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Pretplata</th>
-                </tr>
-            </thead>
-            <tbody class="bg-gray-800 divide-y divide-gray-700">
-                @forelse($users as $user)
-                <tr class="hover:bg-gray-750 transition-colors">
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-400">#{{ $user->UserID }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-200">
-                        {{ $user->FirstName }} {{ $user->LastName }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-400">{{ $user->Email }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="bg-blue-900 text-blue-200 px-2 py-1 rounded-full text-xs">
-                            {{ $user->purchases->count() }} kupovina
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-400">
-                        @if($user->subscriptions->where('Status', 'Active')->where('EndDate', '>', now())->isNotEmpty())
-                        <span class="bg-green-900 text-green-200 px-2 py-1 rounded-full text-xs">
-                            Aktivna
-                        </span>
-                        @else
-                        <span class="bg-red-900 text-red-200 px-2 py-1 rounded-full text-xs">
-                            Nema
-                        </span>
-                        @endif
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">
-                        Nema registrovanih korisnika
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-    <div class="mt-4">
-        {{ $users->links('pagination.page') }}
-    </div>
-</div>
-</div>
-</div>
+                    {{-- Akcije --}}
+                    <a href="{{ route('films.create') }}" 
+                       class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition hover:cursor-pointer flex items-center">
+                        <i class="fas fa-plus mr-2"></i> Novi Film
+                    </a>
+                    <a href="{{ route('series.create') }}" 
+                       class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow transition hover:cursor-pointer flex items-center">
+                        <i class="fas fa-plus mr-2"></i> Nova Serija
+                    </a>
+                </div>
+            </div>
 
+            {{-- Filmovi --}}
+            <div x-show="activeTab === 'films'" 
+                 class="bg-gray-900/80 backdrop-blur-md rounded-2xl shadow-xl p-8 space-y-6">
+                <h2 class="text-xl font-semibold text-white flex items-center">
+                    <i class="fas fa-film text-blue-400 mr-2"></i> Svi filmovi
+                </h2>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-700">
+                        <thead class="bg-gray-800">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Naslov</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Cena</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Pretplata</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Akcije</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-gray-900 divide-y divide-gray-800">
+                            @foreach($films as $film)
+                                <tr class="hover:bg-gray-800 transition">
+                                    <td class="px-6 py-4 text-gray-200">{{ $film->Title }}</td>
+                                    <td class="px-6 py-4 text-gray-400">{{ $film->Price }} RSD</td>
+                                    <td class="px-6 py-4">
+                                        <span class="px-2 py-1 rounded-full text-xs font-semibold 
+                                            {{ $film->IsSubscriptionRequired ? 'bg-green-900 text-green-200' : 'bg-red-900 text-red-200' }}">
+                                            {{ $film->IsSubscriptionRequired ? 'Da' : 'Ne' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 space-x-3">
+                                        <a href="{{ route('films.edit', $film->FilmID) }}" 
+                                           class="text-blue-400 hover:text-blue-300 hover:cursor-pointer">
+                                           <i class="fas fa-edit mr-1"></i> Izmeni
+                                        </a>
+                                        <form action="{{ route('films.destroy', $film->FilmID) }}" method="POST" class="inline">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" 
+                                                    class="text-red-400 hover:text-red-300 hover:cursor-pointer"
+                                                    onclick="return confirm('Da li ste sigurni da želite obrisati film?')">
+                                                <i class="fas fa-trash mr-1"></i> Obriši
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4">
+                    {{ $films->links('pagination.page') }}
+                </div>
+            </div>
+
+            {{-- Serije --}}
+            <div x-show="activeTab === 'series'" 
+                 class="bg-gray-900/80 backdrop-blur-md rounded-2xl shadow-xl p-8 space-y-6">
+                <h2 class="text-xl font-semibold text-white flex items-center">
+                    <i class="fas fa-tv text-purple-400 mr-2"></i> Sve serije
+                </h2>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-700">
+                        <thead class="bg-gray-800">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Naslov</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Cena</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Pretplata</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Akcije</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-gray-900 divide-y divide-gray-800">
+                            @foreach($series as $ser)
+                                <tr class="hover:bg-gray-800 transition">
+                                    <td class="px-6 py-4 text-gray-200">{{ $ser->title }}</td>
+                                    <td class="px-6 py-4 text-gray-400">{{ $ser->price }} RSD</td>
+                                    <td class="px-6 py-4">
+                                        <span class="px-2 py-1 rounded-full text-xs font-semibold 
+                                            {{ $ser->is_subscription_required ? 'bg-green-900 text-green-200' : 'bg-red-900 text-red-200' }}">
+                                            {{ $ser->is_subscription_required ? 'Da' : 'Ne' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 space-x-3">
+                                        <a href="{{ route('series.edit', $ser->SeriesID) }}" 
+                                           class="text-blue-400 hover:text-blue-300 hover:cursor-pointer">
+                                           <i class="fas fa-edit mr-1"></i> Izmeni
+                                        </a>
+                                        <form action="{{ route('series.destroy', $ser->SeriesID) }}" method="POST" class="inline">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" 
+                                                    class="text-red-400 hover:text-red-300 hover:cursor-pointer"
+                                                    onclick="return confirm('Obrisati seriju?')">
+                                                <i class="fas fa-trash mr-1"></i> Obriši
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {{-- Korisnici --}}
+            <div x-show="activeTab === 'users'" 
+                 class="bg-gray-900/80 backdrop-blur-md rounded-2xl shadow-xl p-8 space-y-6">
+                <h2 class="text-xl font-semibold text-white flex items-center">
+                    <i class="fas fa-users text-blue-400 mr-2"></i> Svi korisnici
+                </h2>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-700">
+                        <thead class="bg-gray-800">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Ime i prezime</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Kupovine</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Pretplata</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-gray-900 divide-y divide-gray-800">
+                            @forelse($users as $user)
+                                <tr class="hover:bg-gray-800 transition">
+                                    <td class="px-6 py-4 text-gray-400">#{{ $user->UserID }}</td>
+                                    <td class="px-6 py-4 text-gray-200">{{ $user->FirstName }} {{ $user->LastName }}</td>
+                                    <td class="px-6 py-4 text-gray-400">{{ $user->Email }}</td>
+                                    <td class="px-6 py-4">
+                                        <span class="bg-blue-900 text-blue-200 px-2 py-1 rounded-full text-xs">
+                                            {{ $user->purchases->count() }} kupovina
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        @if($user->subscriptions->where('Status', 'Active')->where('EndDate', '>', now())->isNotEmpty())
+                                            <span class="bg-green-900 text-green-200 px-2 py-1 rounded-full text-xs">
+                                                Aktivna
+                                            </span>
+                                        @else
+                                            <span class="bg-red-900 text-red-200 px-2 py-1 rounded-full text-xs">
+                                                Nema
+                                            </span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                        Nema registrovanih korisnika
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4">
+                    {{ $users->links('pagination.page') }}
+                </div>
+            </div>
+
+        </div>
+    </div>
 </x-app>
