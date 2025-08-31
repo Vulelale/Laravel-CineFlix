@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Series;
-use App\Models\Season;
 use App\Models\Episode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
