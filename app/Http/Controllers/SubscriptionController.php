@@ -38,11 +38,11 @@ class SubscriptionController extends Controller
             ]);
             
             return redirect()->route('user.dashboard')
-            ->with('success', 'Претплата успешно активирана!');
+            ->with('success', 'Pretplata uspešno aktivirana!');
             
         } catch (\Exception $e) {
             return redirect()->back()
-            ->withErrors(['error' => 'Грешка: '.$e->getMessage()]);
+            ->withErrors(['error' => 'Greška: '.$e->getMessage()]);
         }
     }
     
