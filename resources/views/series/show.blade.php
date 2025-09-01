@@ -19,7 +19,7 @@
             </div>
         @endif
 
-        {{-- Glavna kartica --}}
+       
         <div class="bg-gray-900/80 backdrop-blur-md rounded-2xl shadow-xl p-8 grid md:grid-cols-3 gap-10">
 
             {{-- Poster --}}
@@ -39,30 +39,49 @@
 
                 {{-- Osnovni podaci --}}
                 <div class="grid grid-cols-2 gap-y-3 gap-x-6 text-gray-300">
-                    <p><i class="fas fa-calendar-alt text-blue-400 mr-2"></i><span class="font-semibold">Datum izlaska:</span> {{ $series->release_date }}</p>
-                    <p><i class="fas fa-film text-blue-400 mr-2"></i><span class="font-semibold">Žanr:</span> {{ $series->genre }}</p>
-                    <p><i class="fas fa-coins text-yellow-400 mr-2"></i><span class="font-semibold">Cena:</span> {{ $series->price }} RSD</p>
-                    <p><i class="fas fa-ticket-alt text-blue-400 mr-2"></i><span class="font-semibold">Pretplata:</span> {{ $series->is_subscription_required ? 'Da' : 'Ne' }}</p>
+                    <p>
+                        <i class="fas fa-calendar-alt text-blue-400 mr-2"></i>
+                        <span class="font-semibold">Datum izlaska:</span> {{ $series->release_date }}
+                    </p>
+                    <p>
+                        <i class="fas fa-film text-blue-400 mr-2"></i>
+                        <span class="font-semibold">Žanr:</span> {{ $series->genre }}
+                    </p>
+                    <p>
+                        <i class="fas fa-coins text-yellow-400 mr-2"></i>
+                        <span class="font-semibold">Cena:</span> {{ $series->price }} RSD
+                    </p>
+                    <p class="col-span-2">
+                        <i class="fas fa-ticket-alt text-blue-400 mr-2"></i>
+                        <span class="font-semibold">Pretplata:</span> {{ $series->is_subscription_required ? 'Da' : 'Ne' }}
+                    </p>
                 </div>
 
                 {{-- Opis --}}
                 <div>
-                    <h2 class="text-xl font-semibold mb-2 text-white"><i class="fas fa-align-left text-blue-400 mr-2"></i>Opis</h2>
+                    <h2 class="text-xl font-semibold mb-2 text-white">
+                        <i class="fas fa-align-left text-blue-400 mr-2"></i>Opis
+                    </h2>
                     <p class="text-gray-300 leading-relaxed">{{ $series->description }}</p>
                 </div>
 
                 {{-- Ocene --}}
                 <div>
-                    <h2 class="text-xl font-semibold mb-3 text-white"><i class="fas fa-star text-yellow-400 mr-2"></i>Ocene</h2>
+                    <h2 class="text-xl font-semibold mb-3 text-white">
+                        <i class="fas fa-star text-yellow-400 mr-2"></i>Ocene
+                    </h2>
                     <p class="mb-3 text-gray-300">
-                        Prosečna ocena: <span class="font-bold text-yellow-400">{{ number_format($series->averageRating(), 1) }}/5</span> 
+                        Prosečna ocena: 
+                        <span class="font-bold text-yellow-400">{{ number_format($series->averageRating(), 1) }}/5</span> 
                         ({{ $series->ratingsCount() }} korisnika)
                     </p>
 
                     @if(Auth::check())
                         <form action="{{ route('series.rate', $series->SeriesID) }}" method="POST" class="flex items-center gap-3">
                             @csrf
-                            <label for="rating" class="text-gray-300 font-medium"><i class="fas fa-pen mr-2"></i>Ocenite:</label>
+                            <label for="rating" class="text-gray-300 font-medium">
+                                <i class="fas fa-pen mr-2"></i>Ocenite:
+                            </label>
                             <select name="rating" id="rating" class="text-white px-2 py-1 rounded hover:cursor-pointer">
                                 @for($i=1; $i<=5; $i++)
                                     <option value="{{ $i }}">{{ $i }} ★</option>
@@ -74,6 +93,23 @@
                         </form>
                     @endif
                 </div>
+
+
+                <div class="flex gap-4 pt-4 border-t border-gray-700">
+                    <a href="{{ route('tvshows.index') }}" 
+                       class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow transition flex items-center">
+                       <i class="fas fa-arrow-left mr-2"></i> Nazad na listu serija
+                    </a>
+
+                    <form action="{{ route('purchase.series', $series->SeriesID) }}" method="POST">
+                        @csrf
+                        <button type="submit" 
+                            class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg shadow transition flex items-center hover:cursor-pointer">
+                            <i class="fas fa-shopping-cart mr-2"></i> Kupi celu seriju za {{ $series->price }} RSD
+                        </button>
+                    </form>
+                </div>
+
             </div>
         </div>
 
@@ -127,22 +163,7 @@
                 </div>
             @endforeach
         </div>
-
-        {{-- Dugmad dole --}}
-        <div class="mt-10 flex gap-4">
-            <a href="{{ route('tvshows.index') }}" 
-               class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow transition flex items-center">
-               <i class="fas fa-arrow-left mr-2"></i> Nazad na listu serija
-            </a>
-
-            <form action="{{ route('purchase.series', $series->SeriesID) }}" method="POST">
-                @csrf
-                <button type="submit" 
-                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg shadow transition flex items-center hover:cursor-pointer">
-                    <i class="fas fa-shopping-cart mr-2"></i> Kupi celu seriju za {{ $series->price }} RSD
-                </button>
-            </form>
-        </div>
     </div>
 </x-app>
+
 
