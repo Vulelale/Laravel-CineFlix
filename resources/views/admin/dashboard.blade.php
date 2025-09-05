@@ -152,6 +152,11 @@
                         </tbody>
                     </table>
                 </div>
+
+                 <div class="mt-4">
+                    {{ $series->links('pagination.page') }}
+                </div>
+                
             </div>
 
             {{-- Korisnici --}}
